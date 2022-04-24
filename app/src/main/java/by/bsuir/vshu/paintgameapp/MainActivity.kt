@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import by.bsuir.vshu.paintgameapp.ui.splash.SplashScreen
 import by.bsuir.vshu.paintgameapp.ui.theme.PaintGameAppTheme
+import by.bsuir.vshu.paintgameapp.ui.welcome.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SplashScreen()
+                    //SplashScreen()
+                    WelcomeScreen()
                 }
             }
         }
