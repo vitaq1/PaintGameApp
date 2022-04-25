@@ -72,50 +72,7 @@ fun WelcomeScreen(navController: NavController) {
                 )
             ) { fullHeight -> -2 * fullHeight }
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .padding(end = 40.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-            ) {
-
-                Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .height(52.dp)
-                        .width(52.dp)
-                        .clip(CircleShape),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = WHITE)
-                ) {
-                    Image(
-                        painterResource(id = R.drawable.ic_sound),
-                        contentDescription = "sound",
-                        modifier = Modifier.scale(2f),
-                        colorFilter = ColorFilter.tint(PURPLE)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(50.dp)
-                        .clip(RoundedCornerShape(10.dp)),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = WHITE)
-                ) {
-                    Image(
-                        painterResource(id = R.drawable.ic_music),
-                        contentDescription = "music",
-                        modifier = Modifier.scale(2f),
-                        colorFilter = ColorFilter.tint(BLUE)
-                    )
-                }
-
-            }
+            SettingSection()
         }
         AnimatedVisibility(
             visible,
@@ -138,7 +95,7 @@ fun WelcomeScreen(navController: NavController) {
             )
         }
 
-        val scaleAnim by animateFloatAsState(if (!visible.targetState) 18f else 1f)
+        val scaleAnim by animateFloatAsState(if (!visible.targetState) 25f else 1f)
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -168,4 +125,54 @@ fun WelcomeScreen(navController: NavController) {
             navController.navigate("menu")
         }
     }
+}
+
+@Composable
+fun SettingSection(){
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(end = 40.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+    ) {
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .height(52.dp)
+                .width(52.dp)
+                .clip(CircleShape),
+            colors = ButtonDefaults.buttonColors(backgroundColor = WHITE)
+        ) {
+            Image(
+                painterResource(id = R.drawable.ic_sound),
+                contentDescription = "sound",
+                modifier = Modifier.scale(2f),
+                colorFilter = ColorFilter.tint(PURPLE)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .height(50.dp)
+                .width(50.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            colors = ButtonDefaults.buttonColors(backgroundColor = WHITE)
+        ) {
+            Image(
+                painterResource(id = R.drawable.ic_music),
+                contentDescription = "music",
+                modifier = Modifier.scale(2f),
+                colorFilter = ColorFilter.tint(BLUE)
+            )
+        }
+
+    }
+
 }
