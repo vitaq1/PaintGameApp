@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AnimatedNavHost(
                         navController = navController,
-                        startDestination = "menu",
+                        startDestination = "welcome",
                         enterTransition = { EnterTransition.None },
                         exitTransition = { ExitTransition.None },
                         popEnterTransition = { EnterTransition.None },

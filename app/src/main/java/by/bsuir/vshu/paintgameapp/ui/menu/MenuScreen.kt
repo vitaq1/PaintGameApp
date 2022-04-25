@@ -1,6 +1,7 @@
 package by.bsuir.vshu.paintgameapp.ui.menu
 
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Space
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -18,13 +19,16 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -40,10 +44,7 @@ import by.bsuir.vshu.paintgameapp.model.Figure
 import by.bsuir.vshu.paintgameapp.noRippleClickable
 import by.bsuir.vshu.paintgameapp.ui.theme.*
 import by.bsuir.vshu.paintgameapp.ui.welcome.SettingSection
-import kotlin.math.ceil
 
-
-var expanded = 0
 
 @Composable
 fun MenuScreen(navController: NavController) {
@@ -90,9 +91,31 @@ fun MenuScreen(navController: NavController) {
 
                 repeat(figures.size) {
                     item {
-                        FigureCard(figures[it], it % 2 == 0)
+                        var enter: EnterTransition =
+                            slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow),
+                                { fullHeight -> 2 * fullHeight })
+                        var exit: ExitTransition =
+                            slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow),
+                                { fullHeight -> 2 * fullHeight })
+                        if (it % 2 == 0) {
+                            enter =
+                                slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow),
+                                    { fullHeight -> -2 * fullHeight })
+                            exit =
+                                slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow),
+                                    { fullHeight -> -2 * fullHeight })
+                        }
+
+                        AnimatedVisibility(
+                            visible,
+                            enter = enter,
+                            exit = exit
+                        ) {
+                            FigureCard(figures[it], it % 2 == 0)
+                        }
                     }
                 }
+                item { Spacer(modifier = Modifier.height(40.dp)) }
 
             }
 
@@ -104,6 +127,7 @@ fun MenuScreen(navController: NavController) {
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FigureCard(figure: Figure, isLeft: Boolean) {
 
@@ -130,6 +154,18 @@ fun FigureCard(figure: Figure, isLeft: Boolean) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Spacer(modifier = Modifier.width(0.dp))
+
+            if (!isLeft) {
+                AnimatedVisibility(
+                    expanded,
+                    enter = fadeIn(tween(150)) + expandHorizontally(tween(150)),
+                    exit = fadeOut(tween(100)) + shrinkHorizontally(tween(100))
+                ) {
+                    ExtInformationSection(figure)
+                }
+            }
+            Spacer(modifier = Modifier.width(0.dp))
+
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(id = figure.picture),
@@ -147,31 +183,62 @@ fun FigureCard(figure: Figure, isLeft: Boolean) {
                     tint = WHITE
                 )
             }
-
-
-            AnimatedVisibility(
-                expanded,
-                enter = fadeIn(tween(150)) + expandHorizontally(tween(150)),
-                exit = fadeOut(tween(100)) + shrinkHorizontally(tween(100))
-            ) {
-                Column(
-                    modifier = Modifier.height(110.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = Modifier.width(0.dp))
-                    Text(text = "PLAY", fontSize = 40.sp, color = figure.color)
-                    Spacer(modifier = Modifier.width(0.dp))
-                    Text(text = "${figure.progress} %", fontSize = 25.sp,)
-                    Spacer(modifier = Modifier.width(0.dp))
-                    GradientProgressbar(figure = figure)
-                    Spacer(modifier = Modifier.width(0.dp))
-                }
-            }
             Spacer(modifier = Modifier.width(0.dp))
 
+            if (isLeft) {
+                AnimatedVisibility(
+                    expanded,
+                    enter = fadeIn(tween(150)) + expandHorizontally(tween(150)),
+                    exit = fadeOut(tween(100)) + shrinkHorizontally(tween(100))
+                ) {
+                    ExtInformationSection(figure)
+                }
 
+            }
+            Spacer(modifier = Modifier.width(0.dp))
         }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ExtInformationSection(figure: Figure) {
+
+    Column(
+        modifier = Modifier.height(110.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.width(0.dp))
+
+        var selected by remember { mutableStateOf(false) }
+        val scale = animateFloatAsState(if (selected) 1.3f else 1f)
+
+        Text(
+            text = "PLAY",
+            fontSize = 40.sp,
+            color = figure.color,
+            modifier = Modifier
+                .noRippleClickable { println("clicked ${figure.name}") }
+                .scale(scale.value)
+                .pointerInteropFilter {
+                    when (it.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            selected = true
+                        }
+
+                        MotionEvent.ACTION_UP -> {
+                            selected = false
+                        }
+                    }
+                    true
+                })
+
+        Spacer(modifier = Modifier.width(0.dp))
+        Text(text = "${figure.progress} %", fontSize = 25.sp)
+        Spacer(modifier = Modifier.width(0.dp))
+        GradientProgressbar(figure = figure)
+        Spacer(modifier = Modifier.width(0.dp))
     }
 
 }
@@ -188,10 +255,8 @@ fun GradientProgressbar(
         modifier = Modifier
             .width(140.dp)
             .height(indicatorHeight)
-            .padding(start = 20.dp, end = 20.dp, top = 5.dp, bottom = 5.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
     ) {
-
-        // Background indicator
         drawLine(
             color = backgroundIndicatorColor,
             cap = StrokeCap.Round,
@@ -200,10 +265,8 @@ fun GradientProgressbar(
             end = Offset(x = size.width, y = 0f)
         )
 
-        // Convert the downloaded percentage into progress (width of foreground indicator)
-        val progress = (figure.progress / 100.0) * size.width // size.width returns the width of the canvas
-
-        // Foreground indicator
+        val progress =
+            (figure.progress / 100.0) * size.width
         drawLine(
             brush = SolidColor(figure.color),
             cap = StrokeCap.Round,
@@ -213,5 +276,5 @@ fun GradientProgressbar(
         )
 
     }
-
 }
+
