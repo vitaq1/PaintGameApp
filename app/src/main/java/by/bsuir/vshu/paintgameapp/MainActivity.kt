@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import by.bsuir.vshu.paintgameapp.ui.PaintScreen
 
 import com.google.accompanist.navigation.animation.composable
 
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            PaintGameAppTheme {
+            PaintGameAppTheme() {
                 val navController = rememberAnimatedNavController()
 
                 Surface(
@@ -42,16 +43,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AnimatedNavHost(
                         navController = navController,
-                        startDestination = "welcome",
+                        startDestination = "paint",
                         enterTransition = { EnterTransition.None },
                         exitTransition = { ExitTransition.None },
                         popEnterTransition = { EnterTransition.None },
                         popExitTransition = { ExitTransition.None },
                     ) {
-                        println(123)
                         composable("splash") { SplashScreen(navController) }
                         composable("welcome") { WelcomeScreen(navController) }
                         composable("menu") { MenuScreen(navController) }
+                        composable("paint") { PaintScreen(navController) }
                     }
                 }
             }

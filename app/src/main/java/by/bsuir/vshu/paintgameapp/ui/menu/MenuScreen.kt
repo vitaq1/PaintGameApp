@@ -219,8 +219,8 @@ fun ExtInformationSection(figure: Figure) {
             fontSize = 40.sp,
             color = figure.color,
             modifier = Modifier
-                .noRippleClickable { println("clicked ${figure.name}") }
                 .scale(scale.value)
+                //.noRippleClickable { println("clicked ${figure.name}") }
                 .pointerInteropFilter {
                     when (it.action) {
                         MotionEvent.ACTION_DOWN -> {
@@ -229,13 +229,15 @@ fun ExtInformationSection(figure: Figure) {
 
                         MotionEvent.ACTION_UP -> {
                             selected = false
+                            println("clicked ${figure.name}")
                         }
                     }
                     true
-                })
+                }
+        )
 
         Spacer(modifier = Modifier.width(0.dp))
-        Text(text = "${figure.progress} %", fontSize = 25.sp)
+        Text(text = "${figure.progress} %", fontSize = 25.sp, color = BLACK)
         Spacer(modifier = Modifier.width(0.dp))
         GradientProgressbar(figure = figure)
         Spacer(modifier = Modifier.width(0.dp))
