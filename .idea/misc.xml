@@ -5,8 +5,11 @@
       <map>
         <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_cell.xml" value="0.1185" />
         <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_circle.xml" value="0.1185" />
+        <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_play.xml" value="0.1185" />
+        <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_rect.xml" value="0.1185" />
         <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_star.xml" value="0.1185" />
         <entry key="..\:/PaintGameApp/app/src/main/res/drawable/ic_triangle.xml" value="0.1185" />
+        <entry key="..\:/PaintGameApp/app/src/main/res/layout/rect.xml" value="0.1171875" />
       </map>
     </option>
   </component>

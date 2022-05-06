@@ -1,8 +1,10 @@
 package by.bsuir.vshu.paintgameapp.ui.menu
 
+import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -30,6 +32,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import by.bsuir.vshu.paintgameapp.R
+import by.bsuir.vshu.paintgameapp.data.FigureRepository
 import by.bsuir.vshu.paintgameapp.model.Figure
 import by.bsuir.vshu.paintgameapp.noRippleClickable
 import by.bsuir.vshu.paintgameapp.ui.theme.*
@@ -78,11 +82,12 @@ fun MenuScreen(navController: NavController) {
             }
 
             var figures: MutableList<Figure> = mutableListOf()
-            figures.add(Figure("Rect", 70, R.drawable.ic_rect, GREEN))
-            figures.add(Figure("Circle", 50, R.drawable.ic_circle, PURPLE))
-            figures.add(Figure("Triangle", 0, R.drawable.ic_triangle, BLUE))
-            figures.add(Figure("Cell", 0, R.drawable.ic_cell, RED))
-            figures.add(Figure("Star", 0, R.drawable.ic_star, YELLOW))
+            figures.add(FigureRepository.getFigureByName("rect"))
+            figures.add(FigureRepository.getFigureByName("circle"))
+            figures.add(FigureRepository.getFigureByName("triangle"))
+            figures.add(FigureRepository.getFigureByName("cell"))
+            figures.add(FigureRepository.getFigureByName("star"))
+
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -111,7 +116,7 @@ fun MenuScreen(navController: NavController) {
                             enter = enter,
                             exit = exit
                         ) {
-                            FigureCard(figures[it], it % 2 == 0)
+                            FigureCard(figures[it], it % 2 == 0, navController)
                         }
                     }
                 }
@@ -129,7 +134,7 @@ fun MenuScreen(navController: NavController) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FigureCard(figure: Figure, isLeft: Boolean) {
+fun FigureCard(figure: Figure, isLeft: Boolean, navController: NavController) {
 
     var expanded by remember {
         mutableStateOf(false)
@@ -161,7 +166,7 @@ fun FigureCard(figure: Figure, isLeft: Boolean) {
                     enter = fadeIn(tween(150)) + expandHorizontally(tween(150)),
                     exit = fadeOut(tween(100)) + shrinkHorizontally(tween(100))
                 ) {
-                    ExtInformationSection(figure)
+                    ExtInformationSection(figure, navController)
                 }
             }
             Spacer(modifier = Modifier.width(0.dp))
@@ -191,7 +196,7 @@ fun FigureCard(figure: Figure, isLeft: Boolean) {
                     enter = fadeIn(tween(150)) + expandHorizontally(tween(150)),
                     exit = fadeOut(tween(100)) + shrinkHorizontally(tween(100))
                 ) {
-                    ExtInformationSection(figure)
+                    ExtInformationSection(figure, navController)
                 }
 
             }
@@ -202,7 +207,7 @@ fun FigureCard(figure: Figure, isLeft: Boolean) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ExtInformationSection(figure: Figure) {
+fun ExtInformationSection(figure: Figure, navController: NavController) {
 
     Column(
         modifier = Modifier.height(110.dp),
@@ -213,14 +218,13 @@ fun ExtInformationSection(figure: Figure) {
 
         var selected by remember { mutableStateOf(false) }
         val scale = animateFloatAsState(if (selected) 1.3f else 1f)
-
+        val context = LocalContext.current
         Text(
             text = "PLAY",
             fontSize = 40.sp,
             color = figure.color,
             modifier = Modifier
                 .scale(scale.value)
-                //.noRippleClickable { println("clicked ${figure.name}") }
                 .pointerInteropFilter {
                     when (it.action) {
                         MotionEvent.ACTION_DOWN -> {
@@ -229,7 +233,12 @@ fun ExtInformationSection(figure: Figure) {
 
                         MotionEvent.ACTION_UP -> {
                             selected = false
-                            println("clicked ${figure.name}")
+                            if (FigureRepository.isOpen(figure.name)) {
+                                navController.navigate("paint/${figure.name}")
+                            } else {
+                                mToast("Пройдите предыдущий уровень", context)
+                            }
+
                         }
                     }
                     true
@@ -279,4 +288,9 @@ fun GradientProgressbar(
 
     }
 }
+
+private fun mToast(s: String, context: Context) {
+    Toast.makeText(context, s, Toast.LENGTH_LONG).show()
+}
+
 

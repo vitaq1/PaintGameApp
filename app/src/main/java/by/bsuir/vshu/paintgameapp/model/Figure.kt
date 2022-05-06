@@ -7,6 +7,7 @@ data class Figure(
     var name: String = "",
     var progress: Int = 0,
     var picture: Int = 0,
+    var pictureComplete: Int = 0,
     var color: Color = WHITE,
     ) {
 }

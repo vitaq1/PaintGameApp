@@ -1,5 +1,6 @@
 package by.bsuir.vshu.paintgameapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import by.bsuir.vshu.paintgameapp.data.FigureRepository
 import by.bsuir.vshu.paintgameapp.ui.PaintScreen
 
 import com.google.accompanist.navigation.animation.composable
@@ -32,6 +36,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        FigureRepository.loadData(this)
 
         setContent {
             PaintGameAppTheme() {
@@ -43,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AnimatedNavHost(
                         navController = navController,
-                        startDestination = "paint",
+                        startDestination = "splash",
                         enterTransition = { EnterTransition.None },
                         exitTransition = { ExitTransition.None },
                         popEnterTransition = { EnterTransition.None },
@@ -52,7 +57,9 @@ class MainActivity : ComponentActivity() {
                         composable("splash") { SplashScreen(navController) }
                         composable("welcome") { WelcomeScreen(navController) }
                         composable("menu") { MenuScreen(navController) }
-                        composable("paint") { PaintScreen(navController) }
+                        composable("paint/{figureName}") { backStackEntry ->
+                            PaintScreen(navController, backStackEntry.arguments?.getString("figureName")!!)
+                        }
                     }
                 }
             }
